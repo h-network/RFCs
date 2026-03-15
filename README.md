@@ -18,7 +18,7 @@ A production-grade network security analysis pipeline combining GPU-accelerated 
     │   │              │  │              │  │           │  │        │  │
     │   │  tcpdump     │→ │  mistral:7b  │→ │  Morpheus │→ │qwen3:  │  │
     │   │  raw packets │  │  (4070 Ti)   │  │  XGBoost  │  │  32b   │  │
-    │   │              │  │  pcap→JSON   │  │  500K/sec │  │(2x5090)│  │
+    │   │              │  │  or tshark   │  │  500K/sec │  │(2x5090)│  │
     │   └──────────────┘  └──────────────┘  └───────────┘  └────────┘  │
     │                                              │              │     │
     │                                              │    ┌─────────┘     │
@@ -56,6 +56,11 @@ A small LLM (mistral:7b) converts raw packet data into the JSON schema Morpheus 
 }
 ```
 Runs on the lighter GPU (4070 Ti) to keep the 5090s free for heavy inference.
+
+### Stage 2 — Transform 2nd options
+tshark -T json --fields
+
+
 
 ### Stage 3 — Triage
 NVIDIA Morpheus + Triton Inference Server runs GPU-accelerated XGBoost classification. Binary first-pass filter at ~500K packets/sec. Flags anomalous traffic (~2-3% of total volume).
